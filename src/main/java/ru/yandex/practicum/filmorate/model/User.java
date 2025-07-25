@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -16,7 +18,9 @@ import ru.yandex.practicum.filmorate.validation.NoSpaces;
 @AllArgsConstructor
 @NoArgsConstructor
 public class User {
-    private Integer id;
+    private Long id;
+    private String name;
+    private Set<Long> friends = new HashSet<>();
 
     @NotBlank(message = "E-mail must not be blank.")
     @Email(message = "E-mail not valid.")
@@ -25,8 +29,6 @@ public class User {
     @NotBlank(message = "Login must not be blank.")
     @NoSpaces
     private String login;
-
-    private String name;
 
     @Past(message = "Birthday must be in past.")
     private LocalDate birthday;
@@ -37,5 +39,14 @@ public class User {
         this.login = user.getLogin();
         this.name = user.getName();
         this.birthday = user.getBirthday();
+        this.friends = new HashSet<>(user.getFriends());
+    }
+
+    public void addFriend(Long friendId) {
+        friends.add(friendId);
+    }
+
+    public void removeFriend(Long friendId) {
+        friends.remove(friendId);
     }
 }
