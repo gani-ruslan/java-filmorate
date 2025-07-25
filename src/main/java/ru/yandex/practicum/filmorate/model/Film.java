@@ -1,6 +1,8 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
@@ -16,7 +18,8 @@ import ru.yandex.practicum.filmorate.validation.MinDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Film {
-    private Integer id;
+    private Long id;
+    private Set<Long> likes = new HashSet<>();
 
     @NotBlank(message = "Name must not be empty.")
     private String name;
@@ -36,5 +39,14 @@ public class Film {
         this.description = film.getDescription();
         this.releaseDate = film.getReleaseDate();
         this.duration = film.getDuration();
+        this.likes = new HashSet<>(film.getLikes());
+    }
+
+    public void likeFilm(Long filmId) {
+        likes.add(filmId);
+    }
+
+    public void unlikeFilm(Long filmId) {
+        likes.remove(filmId);
     }
 }
