@@ -1,9 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -33,12 +37,21 @@ public class Film {
     @Positive(message = "Duration must be positive.")
     private long duration;
 
+    @NotNull(message = "MPA rating is required.")
+    @Valid
+    private MpaRating mpaRating;
+
+    @Valid
+    private List<Genre> genres = new ArrayList<>();
+
     public Film(Film film) {
         this.id = film.getId();
         this.name = film.getName();
         this.description = film.getDescription();
         this.releaseDate = film.getReleaseDate();
         this.duration = film.getDuration();
+        this.genres = film.getGenres();
+        this.mpaRating = film.getMpaRating();
         this.likes = new HashSet<>(film.getLikes());
     }
 

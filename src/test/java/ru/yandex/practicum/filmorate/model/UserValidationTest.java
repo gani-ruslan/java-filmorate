@@ -1,6 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,12 +23,58 @@ class UserValidationTest {
         validator = factory.getValidator();
     }
 
+    private User validUser() {
+        User user = new User();
+        user.setId(null);
+        user.setEmail("user@mail.com");
+        user.setLogin("login");
+        user.setName("Name");
+        user.setBirthday(LocalDate.of(1990, 1, 1));
+        user.setFriends(new HashSet<>());
+        return user;
+    }
+
     @Test
     void shouldFailWhenEmailInvalid() {
-        User user = new User(null, "Name", new HashSet<>(), "invalid-email","login", LocalDate.of(1990, 1, 1));
+        User user = validUser();
+        user.setEmail("invalid-email");
+
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+        assertTrue(violations
+                .stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("email")));
+    }
+
+    @Test
+    void shouldFailWhenLoginBlank() {
+        User user = validUser();
+        user.setLogin(" ");
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations
+                .stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("login")));
+    }
+
+    @Test
+    void shouldFailWhenBirthdayInFuture() {
+        User user = validUser();
+        user.setBirthday(LocalDate.now().plusDays(1));
+
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertFalse(violations.isEmpty());
+        assertTrue(violations
+                .stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("birthday")));
+    }
+
+    @Test
+    void shouldPassWhenUserIsValid() {
+        User user = validUser();
+        Set<ConstraintViolation<User>> violations = validator.validate(user);
+        assertTrue(violations.isEmpty());
     }
 
     @Test
@@ -33,21 +82,8 @@ class UserValidationTest {
         User user = new User(null, "Name", new HashSet<>(), "email@mail.com", "user name", LocalDate.of(2000, 1, 1));
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("login")));
-    }
-
-    @Test
-    void shouldFailWhenBirthdayInFuture() {
-        User user = new User(null, "Name", new HashSet<>(), "user@mail.com", "login", LocalDate.now().plusDays(1));
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertFalse(violations.isEmpty());
-        assertTrue(violations.stream().anyMatch(v -> v.getPropertyPath().toString().equals("birthday")));
-    }
-
-    @Test
-    void shouldPassWhenUserIsValid() {
-        User user = new User(null, "Name", new HashSet<>(), "user@mail.com", "login", LocalDate.of(1990, 1, 1));
-        Set<ConstraintViolation<User>> violations = validator.validate(user);
-        assertTrue(violations.isEmpty());
+        assertTrue(violations
+                .stream()
+                .anyMatch(v -> v.getPropertyPath().toString().equals("login")));
     }
 }
