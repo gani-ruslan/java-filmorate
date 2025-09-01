@@ -6,9 +6,10 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.feature.film.domain.Film;
+import ru.yandex.practicum.filmorate.feature.mpa.domain.MpaRating;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -27,12 +28,11 @@ class FilmValidationTest {
     private Film validFilm() {
         Film film = new Film();
         film.setId(null);
-        film.setLikes(new HashSet<>());
         film.setName("Title");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120L);
-        film.setMpaRating(new MpaRating(1, "G"));
+        film.setMpa(new MpaRating(1, "G"));
         film.setGenres(List.of());
         return film;
     }
@@ -89,7 +89,7 @@ class FilmValidationTest {
     @Test
     void shouldFailWhenMpaMissing() {
         Film film = validFilm();
-        film.setMpaRating(null); // @NotNull на mpa
+        film.setMpa(null); // @NotNull на mpa
 
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());

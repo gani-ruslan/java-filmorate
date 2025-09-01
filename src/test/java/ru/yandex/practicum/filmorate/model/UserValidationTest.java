@@ -6,9 +6,9 @@ import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import ru.yandex.practicum.filmorate.feature.user.domain.User;
 
 import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,7 +30,6 @@ class UserValidationTest {
         user.setLogin("login");
         user.setName("Name");
         user.setBirthday(LocalDate.of(1990, 1, 1));
-        user.setFriends(new HashSet<>());
         return user;
     }
 
@@ -79,7 +78,13 @@ class UserValidationTest {
 
     @Test
     void shouldFailWhenLoginHasSpaces() {
-        User user = new User(null, "Name", new HashSet<>(), "email@mail.com", "user name", LocalDate.of(2000, 1, 1));
+        User user = new User(
+                null,
+                "Name",
+                "email@mail.com",
+                "user name",
+                LocalDate.of(2000, 1, 1)
+        );
         Set<ConstraintViolation<User>> violations = validator.validate(user);
         assertFalse(violations.isEmpty());
         assertTrue(violations
